@@ -26,6 +26,9 @@ const github = require('@actions/github');
           ...github.context.repo,
           tag: code
         });
+
+        console.log(`Found existing release: ${existing.id}`);
+
         release = await api.repos.updateRelease({
           ...github.context.repo,
           release_id: existing.id,
