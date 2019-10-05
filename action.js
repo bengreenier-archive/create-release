@@ -27,11 +27,13 @@ const github = require('@actions/github');
           tag: code
         });
 
-        console.log(`Found existing release: ${existing.id}`);
+        const existingId = existing.data.id
+
+        console.log(`Found existing release: ${JSON.stringify(existing.data)}`);
 
         release = await api.repos.updateRelease({
           ...github.context.repo,
-          release_id: existing.id,
+          release_id: existingId,
           tag_name: code,
           target_commitish: github.context.sha,
           name,
