@@ -27,7 +27,7 @@ const github = require('@actions/github');
           tag: code
         });
 
-        const existingId = existing.data.id
+        const existingId = existing.data.id;
 
         console.log(`Found existing release: ${JSON.stringify(existing.data)}`);
 
