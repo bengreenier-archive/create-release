@@ -14,6 +14,7 @@ Example
         name: My lovely release
         code: latest
         prerelease: true
+        allowUpdating: true
         assets: >
           source.txt:target.txt:text/plain
           another:one:application/json

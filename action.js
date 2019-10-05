@@ -15,22 +15,24 @@ const github = require('@actions/github');
     const code = core.getInput('code');
     const body = core.getInput('body');
     const prerelease = core.getInput('prerelease') == 'true';
-    const recreate = core.getInput('prerelease') == 'true';
+    const editIfExists = core.getInput('allowUpdating') == 'true';
     const assets = core.getInput('assets').split(' ').map(asset => asset.split(':'));
 
-    if (recreate) {
+    let release;
+
+    if (editIfExists) {
       try {
-        const release = await api.repos.getReleaseByTag({
+        const existing = await api.repos.getReleaseByTag({
           ...github.context.repo,
           tag: code
         });
-        await api.repos.deleteRelease({
+        release = await api.repos.updateRelease({
           ...github.context.repo,
-          release_id: release.data.id
-        });
-        await api.git.deleteRef({
-          ...github.context.repo,
-          ref: `tags/${code}`
+          tag_name: code,
+          target_commitish: github.context.sha,
+          name,
+          body,
+          prerelease: prerelease
         });
       }
       catch (error) {
@@ -38,16 +40,16 @@ const github = require('@actions/github');
           throw error;
         }
       }
+    } else {
+      release = await api.repos.createRelease({
+        ...github.context.repo,
+        tag_name: code,
+        target_commitish: github.context.sha,
+        name,
+        body,
+        prerelease: prerelease
+      });
     }
-
-    const release = await api.repos.createRelease({
-      ...github.context.repo,
-      tag_name: code,
-      target_commitish: github.context.sha,
-      name,
-      body,
-      prerelease: prerelease
-    });
 
     for (const [source, target, type] of assets) {
       const data = fs.readFileSync(source);
