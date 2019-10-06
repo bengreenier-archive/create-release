@@ -34,8 +34,6 @@ const github = require('@actions/github');
         release = await api.repos.updateRelease({
           ...github.context.repo,
           release_id: existingId,
-          tag_name: code,
-          target_commitish: github.context.sha,
           name,
           body,
           prerelease: prerelease
